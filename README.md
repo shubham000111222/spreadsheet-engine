@@ -20,7 +20,7 @@ Infollion Software Developer Intern assignment.
 
 ### Installation
 ```bash
-git clone https://github.com/YOUR_USERNAME/spreadsheet-engine.git
+git clone https://github.com/shubham000111222/spreadsheet-engine.git
 cd spreadsheet-engine
 npm install
 npm run dev
