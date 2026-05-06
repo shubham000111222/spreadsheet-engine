@@ -3,6 +3,8 @@
 A React-based spreadsheet with Excel-like formula evaluation, built as part of the 
 Infollion Software Developer Intern assignment.
 
+![Spreadsheet Engine Screenshot](screenshot.png)
+
 ## Features
 - 10×10 editable grid (expandable)
 - Formula evaluation with cell references and arithmetic
