@@ -7,7 +7,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { parseFormula, collectRefs } from '../engine/parser.js';
 import { evaluateCell } from '../engine/evaluator.js';
-import { createGraph, updateDeps, detectCycle, getRecalcOrder } from '../engine/dependencyGraph.js';
+import { createGraph, updateDeps, detectCycle, getRecalcOrder, findCyclicCells } from '../engine/dependencyGraph.js';
 import { buildCellAddress, colIndexToLetter } from '../utils/cellUtils.js';
 
 const INITIAL_COLS = 10;
@@ -129,9 +129,9 @@ export function useSpreadsheet() {
       updateDeps(cellId, newDeps, graph);
       newData[cellId] = { raw, value: ERR_CIRCULAR, error: ERR_CIRCULAR };
 
-      // Also mark all cells that transitively depend on cellId as circular
-      const order = getRecalcOrder(cellId, graph);
-      for (const dep of order) {
+      // Also mark all cells that are part of the cycle as circular
+      const cyclicCells = findCyclicCells(cellId, graph);
+      for (const dep of cyclicCells) {
         if (newData[dep]) {
           newData[dep] = { ...newData[dep], value: ERR_CIRCULAR, error: ERR_CIRCULAR };
         }

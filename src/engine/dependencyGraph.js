@@ -73,27 +73,70 @@ export function detectCycle(startCell, newDeps, graph) {
 
 /**
  * Get the ordered list of cells that need to be recalculated after
- * `changedCell` is updated, using BFS through the dependents graph.
- * Returns cells in topological order (dependents after their dependencies).
+ * `changedCell` is updated. Uses Kahn's algorithm for topological sort
+ * on the subgraph of reachable dependents.
  *
  * @param {string} changedCell
- * @param {{ dependents: object }} graph
+ * @param {{ dependents: object, dependencies: object }} graph
  * @returns {string[]}
  */
 export function getRecalcOrder(changedCell, graph) {
-  const { dependents } = graph;
-  const visited = new Set();
-  const order = [];
-  const queue = [changedCell];
+  const { dependents, dependencies } = graph;
 
+  // 1. Find all reachable cells (the affected subgraph)
+  const reachable = new Set();
+  const queue = [changedCell];
   while (queue.length > 0) {
     const cell = queue.shift();
-    if (visited.has(cell)) continue;
-    visited.add(cell);
-    if (cell !== changedCell) order.push(cell);
+    if (reachable.has(cell)) continue;
+    reachable.add(cell);
     const deps = dependents[cell] || new Set();
     for (const dep of deps) {
-      if (!visited.has(dep)) queue.push(dep);
+      if (!reachable.has(dep)) queue.push(dep);
+    }
+  }
+
+  // 2. Compute in-degrees for the reachable subgraph
+  // In-degree here means: how many dependencies does this cell have THAT ARE ALSO IN THE REACHABLE SUBGRAPH?
+  const inDegree = {};
+  for (const cell of reachable) {
+    inDegree[cell] = 0;
+  }
+  
+  for (const cell of reachable) {
+    const deps = dependencies[cell] || new Set();
+    for (const dep of deps) {
+      if (reachable.has(dep)) {
+        inDegree[cell]++;
+      }
+    }
+  }
+
+  // 3. Kahn's Algorithm
+  const order = [];
+  const zeroInDegreeQueue = [];
+  
+  // Find initial nodes with 0 in-degree (should be changedCell)
+  for (const cell of reachable) {
+    if (inDegree[cell] === 0) {
+      zeroInDegreeQueue.push(cell);
+    }
+  }
+
+  while (zeroInDegreeQueue.length > 0) {
+    const curr = zeroInDegreeQueue.shift();
+    if (curr !== changedCell) {
+      order.push(curr);
+    }
+    
+    const deps = dependents[curr] || new Set();
+    for (const dep of deps) {
+      if (reachable.has(dep)) {
+        inDegree[dep]--;
+        if (inDegree[dep] === 0) {
+          zeroInDegreeQueue.push(dep);
+        }
+      }
     }
   }
 
@@ -130,9 +173,17 @@ export function findCyclicCells(startCell, graph) {
   }
 
   // Check startCell and all its transitive dependents
-  const toCheck = new Set([startCell]);
-  const dep = dependents[startCell] || new Set();
-  for (const d of dep) toCheck.add(d);
+  const toCheck = new Set();
+  const queue = [startCell];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    if (toCheck.has(cur)) continue;
+    toCheck.add(cur);
+    const deps = dependents[cur] || new Set();
+    for (const d of deps) {
+      if (!toCheck.has(d)) queue.push(d);
+    }
+  }
 
   for (const cell of toCheck) {
     if (hasCycle(cell)) cyclic.add(cell);
