@@ -1,0 +1,26 @@
+{
+  "name": "spreadsheet-engine",
+  "version": "1.0.0",
+  "description": "React-based spreadsheet engine with formula evaluation",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "jsdom": "^25.0.1",
+    "vite": "^6.3.5",
+    "vitest": "^2.1.5"
+  }
+}

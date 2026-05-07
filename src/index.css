@@ -1,0 +1,759 @@
+/* ═══════════════════════════════════════════════════════════════
+   index.css — Spreadsheet Engine
+   Premium dark-themed spreadsheet UI
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color palette */
+  --bg-app:         #0f1117;
+  --bg-surface:     #161b27;
+  --bg-surface-2:   #1c2333;
+  --bg-surface-3:   #212840;
+  --bg-header:      #1a2035;
+  --bg-selected:    #1a3a6b;
+  --bg-hover:       #1e2a3f;
+
+  --border:         #2a3452;
+  --border-strong:  #3a4a6a;
+  --border-selected:#3b82f6;
+
+  --text-primary:   #e2e8f0;
+  --text-secondary: #8b9dc3;
+  --text-muted:     #4a5880;
+  --text-header:    #94a3c8;
+  --text-error:     #f87171;
+  --text-circular:  #fb923c;
+  --text-ref:       #c084fc;
+  --text-div:       #facc15;
+
+  --accent:         #3b82f6;
+  --accent-hover:   #2563eb;
+  --accent-glow:    rgba(59, 130, 246, 0.2);
+
+  --btn-bg:         #1e2a3f;
+  --btn-hover:      #253250;
+  --btn-active:     #2d3d60;
+  --btn-disabled:   #141a28;
+
+  --shadow-sm:      0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:      0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:      0 8px 32px rgba(0,0,0,0.6);
+
+  /* Typography */
+  --font-ui:    'Inter', system-ui, sans-serif;
+  --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Sizing */
+  --cell-w:     100px;
+  --cell-h:     30px;
+  --header-w:   44px;
+  --toolbar-h:  48px;
+  --formulabar-h: 40px;
+  --app-header-h: 54px;
+  --footer-h:   34px;
+
+  /* Transitions */
+  --transition: 150ms ease;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App Shell ────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-app);
+}
+
+/* ── App Header ───────────────────────────────────────────── */
+.app__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--app-header-h);
+  padding: 0 20px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.app__logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.app__logo svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.app__subtitle {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-strong);
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--toolbar-h);
+  padding: 0 14px;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar__group--history {
+  gap: 6px;
+}
+
+.toolbar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-strong);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+.toolbar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), opacity var(--transition);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.toolbar__btn:hover:not(:disabled) {
+  background: var(--btn-hover);
+  border-color: var(--border-strong);
+}
+
+.toolbar__btn:active:not(:disabled) {
+  background: var(--btn-active);
+}
+
+.toolbar__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.toolbar__btn--icon svg {
+  flex-shrink: 0;
+}
+
+.toolbar__btn--sm {
+  padding: 4px 10px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1;
+  min-width: 28px;
+  justify-content: center;
+}
+
+.toolbar__label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.toolbar__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.toolbar__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}
+
+.toolbar__info {
+  margin-left: 2px;
+}
+
+.toolbar__right {
+  margin-left: auto;
+}
+
+.toolbar__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend__item {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.legend__item--error    { color: var(--text-error);    border-color: rgba(248,113,113,0.25); background: rgba(248,113,113,0.08); }
+.legend__item--circular { color: var(--text-circular); border-color: rgba(251,146,60,0.25);  background: rgba(251,146,60,0.08); }
+.legend__item--ref      { color: var(--text-ref);      border-color: rgba(192,132,252,0.25); background: rgba(192,132,252,0.08); }
+.legend__item--div      { color: var(--text-div);      border-color: rgba(250,204,21,0.25);  background: rgba(250,204,21,0.08); }
+
+/* ── Formula Bar ──────────────────────────────────────────── */
+.formula-bar {
+  display: flex;
+  align-items: center;
+  height: var(--formulabar-h);
+  background: var(--bg-surface);
+  border-bottom: 2px solid var(--border-strong);
+  flex-shrink: 0;
+  padding: 0 4px 0 0;
+}
+
+.formula-bar__cell-id {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--header-w);
+  min-width: var(--header-w);
+  height: 100%;
+  background: var(--bg-header);
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+.formula-bar__fx {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 100%;
+  border-right: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.formula-bar__input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  caret-color: var(--accent);
+}
+
+.formula-bar__input::placeholder {
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.formula-bar__input:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── Function Suggestions ─────────────────────────────────── */
+.fn-suggest {
+  position: fixed;
+  z-index: 220;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  max-height: 220px;
+  overflow: auto;
+  padding: 4px 0;
+}
+
+.fn-suggest__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.fn-suggest__item--active {
+  background: var(--bg-selected);
+}
+
+.fn-suggest__item:hover {
+  background: var(--bg-hover);
+}
+
+.fn-suggest__name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.fn-suggest__syntax {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* ── Main Content ─────────────────────────────────────────── */
+.app__main {
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-app);
+}
+
+/* ── Grid Wrapper ─────────────────────────────────────────── */
+.grid-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.grid-scroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 2px;
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.grid-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.grid-scroll::-webkit-scrollbar-track { background: transparent; }
+.grid-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+.grid-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+.grid-scroll::-webkit-scrollbar-corner { background: var(--bg-surface); }
+
+/* ── Grid Table ───────────────────────────────────────────── */
+.grid-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+  position: relative;
+}
+
+/* ── Header Cells ─────────────────────────────────────────── */
+.header-cell {
+  background: var(--bg-header);
+  color: var(--text-header);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  user-select: none;
+  border: 1px solid var(--border);
+  position: sticky;
+  z-index: 2;
+}
+
+.header-cell--corner {
+  width: var(--header-w);
+  min-width: var(--header-w);
+  top: 0;
+  left: 0;
+  z-index: 4;
+  background: var(--bg-surface-3);
+  border-bottom-color: var(--border-strong);
+  border-right-color: var(--border-strong);
+}
+
+.header-cell--col {
+  top: 0;
+  width: var(--cell-w);
+  min-width: var(--cell-w);
+  height: var(--cell-h);
+  padding: 0 4px;
+  z-index: 3;
+  border-bottom: 2px solid var(--border-strong);
+}
+
+.header-cell--row {
+  left: 0;
+  width: var(--header-w);
+  min-width: var(--header-w);
+  height: var(--cell-h);
+  padding: 0 6px;
+  text-align: right;
+  z-index: 2;
+  border-right: 2px solid var(--border-strong);
+}
+
+/* ── Data Cells ───────────────────────────────────────────── */
+.cell {
+  width: var(--cell-w);
+  min-width: var(--cell-w);
+  height: var(--cell-h);
+  max-height: var(--cell-h);
+  border: 1px solid var(--border);
+  padding: 0;
+  vertical-align: middle;
+  cursor: cell;
+  transition: background var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.cell:hover:not(.cell--selected):not(.cell--editing) {
+  background: var(--bg-hover);
+}
+
+.cell--selected {
+  background: var(--bg-selected);
+  outline: 2px solid var(--border-selected);
+  outline-offset: -1px;
+  z-index: 1;
+}
+
+.cell--editing {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  z-index: 2;
+  background: var(--bg-surface-3);
+}
+
+.cell--range {
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.cell--range-anchor {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.cell__display {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0 6px;
+  line-height: var(--cell-h);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: cell;
+}
+
+.cell__input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0 6px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  caret-color: var(--accent);
+}
+
+/* Error states */
+.cell--error .cell__display {
+  color: var(--text-error);
+  font-weight: 600;
+}
+
+.cell--circular .cell__display {
+  color: var(--text-circular);
+  font-weight: 600;
+}
+
+/* #REF and #DIV/0 are also errors but use base --text-error with slight variation */
+.cell--error:not(.cell--circular) .cell__display {
+  color: var(--text-error);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.app__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--footer-h);
+  padding: 0 16px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.app__footer-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Scrollbar on tbody ───────────────────────────────────── */
+
+/* ── Selection flash animation ────────────────────────────── */
+@keyframes cellSelect {
+  0%   { background: rgba(59,130,246,0.35); }
+  100% { background: var(--bg-selected); }
+}
+
+.cell--selected {
+  animation: cellSelect 0.15s ease-out forwards;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app__subtitle { display: none; }
+  .toolbar__legend { display: none; }
+  :root {
+    --cell-w: 80px;
+    --header-w: 36px;
+  }
+}
+
+/* ── Function Help Panel ──────────────────────────────────── */
+.fn-help {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border);
+  height: 34px;
+}
+
+.fn-help__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  user-select: none;
+}
+
+.fn-help__toggle:hover {
+  background: var(--btn-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.fn-help__toggle--active {
+  background: var(--bg-selected);
+  border-color: var(--border-selected);
+  color: var(--accent);
+}
+
+.fn-help__panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 14px;
+  z-index: 100;
+  width: 640px;
+  max-height: 420px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fn-help__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface-2);
+  flex-shrink: 0;
+}
+
+.fn-help__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color var(--transition);
+}
+
+.fn-help__close:hover { color: var(--text-primary); }
+
+.fn-help__body {
+  overflow-y: auto;
+  padding: 10px 14px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.fn-group {
+  margin-bottom: 14px;
+}
+
+.fn-group__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  padding-left: 2px;
+}
+
+.fn-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fn-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.fn-row:last-child { border-bottom: none; }
+
+.fn-row__name {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 4px 10px 4px 4px;
+  white-space: nowrap;
+  width: 80px;
+}
+
+.fn-row__syntax {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  white-space: nowrap;
+  width: 200px;
+}
+
+.fn-row__desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 4px;
+}
+
+.fn-help__tip {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--bg-surface-3);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.fn-help__tip code {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  background: rgba(59,130,246,0.12);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10.5px;
+}
